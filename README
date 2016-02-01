@@ -1,0 +1,17 @@
+Google Calendar Homework Extension
+=========
+
+A command line utility integrated with Google Calendar allowing for quick homework entry and modification, visible through the Google Calendar interface.
+
+## Installation
+
+  npm install -g homework
+
+## Usage
+
+  Coming soon.
+
+## Tests
+
+  Coming soon.
+
