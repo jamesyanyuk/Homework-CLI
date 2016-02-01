@@ -1,7 +1,7 @@
 {
   "name": "homework",
-  "version": "0.1.7",
-  "description": "Google Calendar Homework Extension",
+  "version": "0.1.72",
+  "description": "Homework CLI integrated with Google Calendar",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

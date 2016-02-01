@@ -1,7 +1,5 @@
 # Google Calendar Homework Extension CLI
 
-> A CLI integrated with Google Calendar allowing for quick homework entry and modification
-
 ![homework](https://raw.githubusercontent.com/jyanyuk/Node-Homework/master/banner.png)
 
 [![npm](https://img.shields.io/npm/v/homework.svg)](https://www.npmjs.com/package/homework)
