@@ -1,6 +1,6 @@
 # Google Calendar Homework Extension CLI
 
-> A command line utility integrated with Google Calendar allowing for quick homework entry and modification, visible through the Google Calendar interface.
+> A CLI integrated with Google Calendar allowing for quick homework entry and modification
 
 ## Getting Started
 
