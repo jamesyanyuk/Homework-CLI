@@ -1,6 +1,6 @@
 {
   "name": "homework",
-  "version": "0.1.73",
+  "version": "0.1.74",
   "description": "Homework CLI integrated with Google Calendar",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
