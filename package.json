@@ -1,6 +1,6 @@
 {
   "name": "homework",
-  "version": "0.1.91",
+  "version": "0.2.0",
   "files": [
       "cli"
   ],
@@ -24,7 +24,7 @@
   "license": "ISC",
   "preferGlobal": true,
   "bin": {
-    "hw": "./cli/main.js"
+    "hw": "./cli/cli.js"
   },
   "dependencies": {
     "commander": "^2.9.0",
