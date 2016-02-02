@@ -1,6 +1,9 @@
 {
   "name": "homework",
-  "version": "0.1.9",
+  "version": "0.1.91",
+  "files": [
+      "cli"
+  ],
   "description": "Homework CLI integrated with Google Calendar",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -23,7 +26,6 @@
   "bin": {
     "hw": "./cli/main.js"
   },
-  "files": ["cli"],
   "dependencies": {
     "commander": "^2.9.0",
     "jsonfile": "^2.2.3",
