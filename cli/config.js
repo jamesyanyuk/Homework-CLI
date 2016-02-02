@@ -1,5 +1,5 @@
 var config = {};
 
-config.VERSION = '0.2.0';
+config.VERSION = '0.2.1';
 
 module.exports = config;
