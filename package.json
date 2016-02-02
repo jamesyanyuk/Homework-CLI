@@ -23,6 +23,7 @@
   "bin": {
     "hw": "./cli/main.js"
   },
+  "files": ["cli"],
   "dependencies": {
     "commander": "^2.9.0",
     "jsonfile": "^2.2.3",
