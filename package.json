@@ -1,8 +1,8 @@
 {
   "name": "homework",
-  "version": "0.2.2",
+  "version": "0.2.4",
   "files": [
-      "cli"
+    "cli"
   ],
   "description": "Homework CLI integrated with Google Calendar",
   "scripts": {
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jyanyuk/Node-Homework.git"
+    "url": "https://github.com/jyanyuk/Homework-CLI.git"
   },
   "keywords": [
     "homework",
@@ -24,10 +24,11 @@
   "license": "ISC",
   "preferGlobal": true,
   "bin": {
-    "hw": "./cli/cli.js"
+    "hw": "./cli/hw.js"
   },
   "dependencies": {
     "commander": "^2.9.0",
+    "google-calendar": "^1.3.2",
     "jsonfile": "^2.2.3",
     "prompt": "^0.2.14"
   }
