@@ -34,7 +34,7 @@ var tokenFile = path.join(homePath, '.config', config.CLIENT_NAME, 'token.json')
 var configObj = {};
 
 // If config file already exists, confirm overwrite
-if(fs.existsSync(configFile)) {
+if(fs.existsSync(configFile) || fs.existsSync(tokenFile)) {
     inquirer.prompt([
         {
             type: 'confirm',
@@ -45,8 +45,10 @@ if(fs.existsSync(configFile)) {
     ], function (answers) {
         if(answers.toOverwrite) {
             // Remove files
-            fs.unlinkSync(configFile);
-            fs.unlinkSync(tokenFile);
+            if(fs.existsSync(configFile))
+                fs.unlinkSync(configFile);
+            if(fs.existsSync(tokenFile))
+                fs.unlinkSync(tokenFile);
 
             createCalendar();
         } else {
