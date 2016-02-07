@@ -9,14 +9,23 @@
 
 ```
 $ hw --help
-   Usage: hw <command>
 
-   hw init
-   hw add "<homework description>" "<due date and time>"
-       example: hw add "physics reading ch. 5" "2/1/16 2:00 pm"
+  Usage: hw <cmd> [arguments] [options]
+
+
+  Commands:
+
+    init        Run CLI initialization
+    add         Add homework assignment to calendar
+    help [cmd]  display help for [cmd]
+
+  Options:
+
+    -h, --help     output usage information
+    -V, --version  output the version number
 
 $ hw add "CS 383: read chapter 14" "3/12/16 7:00 pm"
-   Homework-CLI: Added homework to calendar.
+  Homework-CLI: Added assignment to calendar!
 ```
 
 ## Installation
@@ -29,20 +38,17 @@ $ npm install -g homework
 
 ### Setup
 
-You must first acquire a google calendar token. One can be obtained by using the *google-oauth-quick-token* tool, found [here](https://www.npmjs.com/package/google-oauth-quick-token). Follow the **Running the program** guide, and select the *Calendar* API and scope when prompted to do so. Save the access token string for use below!
-
 Run the init command:
 
 ```
 $ hw init
 ```
 
-You'll be prompted to submit your access token string:
+You'll be prompted to authorize your client with access to your calendar through the browser.
 
 ```
 $ hw init
-   Please enter your Google access token string (calendar scope):
-   <ACCESS-TOKEN-STRING>
+  Homework-CLI: Finished initializing the CLI!
 ```
 
 You may now add homework assignments using the provided commands, as shown below.
@@ -68,7 +74,17 @@ Follow the guide above in **Installation: Setup**.
 To add a homework assignment, run the following command:
 
 ```
-$ hw add "<homework description>" "<due date and time>"
+$ hw add "<homework title>" "<due date and time>"
 ```
 
-This will add a homework item to your calendar.
+This will add a homework item to your calendar. An example is shown below:
+
+```
+$ hw add "Physics 151 Lab 2" "2/9/16 5:00 pm"
+  Homework-CLI: Added assignment to calendar!
+```
+
+You may also specify a more detailed description with the -d option, as shown below:
+
+```
+$ hw add "<homework title>" "<due date and time>" -d "<detailed description>"

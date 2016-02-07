@@ -1,14 +1,20 @@
 #!/usr/bin/env node
 
 var program = require('commander');
+
 var fs = require('fs');
 var path = require('path');
 var jsonfile = require('jsonfile');
-var prompt = require('prompt');
+var inquirer = require('inquirer');
+var authGoogle = require('auth-google');
+
+var google = require('googleapis');
+var gcal = google.calendar('v3');
+
+var OAuth2 = google.auth.OAuth2;
+var oauth2Client = new OAuth2();
 
 var config = require('./config.js');
-
-prompt.message = config.PROMPT_MSG;
 
 program
     .version(config.VERSION)
@@ -19,45 +25,95 @@ program
  * Create a new config file (config.json)
  */
 
+var homePath = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
+
 var configFile = path.join(__dirname, 'config.json');
+var tokenFile = path.join(homePath, '.config', config.CLIENT_NAME, 'token.json');
+
+// Config file object
+var configObj = {};
 
 // If config file already exists, confirm overwrite
 if(fs.existsSync(configFile)) {
-    prompt.start();
-    prompt.get({
-        name: 'confirmation',
-        default: 'y',
-        description: 'Are you sure you want to overwrite your config file?'
-    }, function(err, resultConf) {
-        var conf = resultConf.confirmation.toLowerCase();
-
-        // Begin overwrite
-        if(conf === 'y' || conf === 'yes') {
-            // Remove file
+    inquirer.prompt([
+        {
+            type: 'confirm',
+            name: 'toOverwrite',
+            message: 'Are you sure you want to overwrite your config file(s)?',
+            default: true
+        }
+    ], function (answers) {
+        if(answers.toOverwrite) {
+            // Remove files
             fs.unlinkSync(configFile);
+            fs.unlinkSync(tokenFile);
 
-            createConfigFile();
+            createCalendar();
         } else {
             process.exit(0);
         }
     });
 } else {
-    createConfigFile();
+    createCalendar();
 }
 
-function createConfigFile() {
-    // Request user to input google access key with calendar scope
-    prompt.start();
-    prompt.get({
-        name: 'accessToken',
-        description: 'Enter Google access token string (Calendar scope)'
-    }, function(err, result) {
-        //TODO: Check whether token is valid and has calendar scope
+function writeConfigFile(configObj) {
+    // Write to file
+    jsonfile.writeFileSync(configFile, configObj);
+}
 
-        var configData = {
-            'google-access-token': result.accessToken
-        };
+function readConfigFile() {
+    // Read from file
+    return jsonfile.readFileSync(configFile);
+}
 
-        jsonfile.writeFileSync(configFile, configData);
+function createCalendar() {
+    authGoogle(config.GOOGLE_AUTH, function(error, token) {
+        oauth2Client.setCredentials({
+            access_token: token.access_token,
+            refresh_token: token.refresh_token
+        });
+
+        // Check to see if calendar exists, and user is owner
+        gcal.calendarList.list({
+            auth: oauth2Client
+        }, function (err, calendarList) {
+            // See if calendar list contains our calendar
+            var result = calendarList.items.filter(function (item) {
+                if (item.accessRole === config.CALENDAR.accessRole) {
+                    return item.summary == config.CALENDAR.summary;
+                }
+            });
+
+            if (result.length > 0) {
+                // If calendar exists already, store id of calendar in config file
+                var calendarId = result[0].id;
+                configObj.calendarId = calendarId;
+
+                // Create config file
+                writeConfigFile(configObj);
+
+                console.log('  Homework-CLI: Finished initializing the CLI!');
+                process.exit(0);
+            } else {
+                // Otherwise, create a new calendar
+                gcal.calendars.insert({
+                    auth: oauth2Client,
+                    resource: {
+                        summary: config.CALENDAR.summary
+                    }
+                }, function (err, calendarEntry) {
+                    // Now store id of new calendar in config file
+                    var calendarId = calendarEntry.id;
+                    configObj.calendarId = calendarId;
+
+                    // Create config file
+                    writeConfigFile(configObj);
+
+                    console.log('  Homework-CLI: Finished initializing the CLI!');
+                    process.exit(0);
+                });
+            }
+        });
     });
 }

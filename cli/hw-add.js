@@ -1,19 +1,39 @@
 #!/usr/bin/env node
 
 var program = require('commander');
+
+var fs = require('fs');
 var path = require('path');
 var jsonfile = require('jsonfile');
-var prompt = require('prompt');
-var gcal = require('google-calendar');
+var inquirer = require('inquirer');
+var authGoogle = require('auth-google');
+var validator = require('validator');
+
+var google = require('googleapis');
+var gcal = google.calendar('v3');
+
+var OAuth2 = google.auth.OAuth2;
+var oauth2Client = new OAuth2();
 
 var config = require('./config.js');
 
-prompt.message = config.PROMPT_MSG;
-
 program
     .version(config.VERSION)
-    .usage('<description> <date : time> [options]')
+    .usage('<title> <date & time> [options]')
+    .option('-d, --desc <value>', 'Description of homework assignment')
     .parse(process.argv);
+
+/**
+ * If config file missing or invalid, prompt user to run init
+ */
+
+// Check for existence of config.json in module directory
+if(!fs.existsSync(path.join(__dirname, 'config.json'))
+    && program.args[0] !== 'init') {
+    // Prompt user
+    console.log('  Homework-CLI: Before continuing, run `hw init`.');
+    process.exit(0);
+}
 
 /**
  * Add homework to calendar
@@ -23,43 +43,47 @@ program
 var genConfigFile = path.join(__dirname, 'config.json');
 var genConfig = jsonfile.readFileSync(genConfigFile);
 
-var accessToken = genConfig['google-access-token'];
+// Pull calendar id from config
+var calendarId = genConfig.calendarId;
 
 var calendar = config.CALENDAR;
 
-// Load google calendar module
-var googleCalendar = new gcal.GoogleCalendar(accessToken);
+// Parse out title and date from provided arguments
+var title = program.args[0];
+var dateTime = validator.toDate(program.args[1]);
 
-// Check to see if calendar `Homework-Beta` exists
-// If not, create one
-googleCalendar.calendarList.list(function(err, calendarList) {
-    console.log(calendarList.items);
-    // Search for owned calendar item with name `Homework`
-    var calFound = false;
-    console.log(calendarList.items.length);
-    for(var i = 0; i < calendarList.items; i++) {
-        var item = calendarList.items[i];
-        if(item.summary === configCalendar.name && item.accessRole === calendar.accessRole)
-            calFound = true;
-    }
+// Optional arguments
+var description = program.desc;
 
-    // If not found, create one
-    if(!calFound) {
-        calendarList.items.push({
-            kind: 'calendar#calendarListEntry',
-            id: 'homework-cli',
-            summary: calendar.name,
-            timeZone: 'America/New_York',
-            colorId: '6',
-            backgroundColor: '#ffad46',
-            foregroundColor: '#000000',
-            selected: true,
-            accessRole: 'owner',
-            defaultReminders: []
-        });
+// Check for valid inputs
+if(!title || !dateTime) {
+    console.log('  Must provide title and valid date:time as arguments.\n' +
+            '    - Example: `hw add "Physics 151 Lab 2" "2/14/16 5:00 pm"`\n' +
+            '    - Refer to `hw add --help`');
+    process.exit(0);
+}
 
-        googleCalendar.calendarList.insert(calendarList, {}, function(err, res) {
-            console.log('Added new calendar!');
-        });
-    }
+authGoogle(config.GOOGLE_AUTH, function(err, token) {
+    oauth2Client.setCredentials({
+        access_token: token.access_token,
+        refresh_token: token.refresh_token
+    });
+
+    gcal.events.insert({
+        auth: oauth2Client,
+        calendarId: calendarId,
+        resource: {
+            summary: title,
+            start: { dateTime: dateTime },
+            end: { dateTime: dateTime },
+            description: description ? description : ''
+        }
+    }, function(err, event) {
+        if(err || !event) {
+            console.log('  Homework-CLI: Failed to add assignment to calendar!');
+            process.exit(0);
+        }
+
+        console.log('  Homework-CLI: Added assignment to calendar!');
+    });
 });
