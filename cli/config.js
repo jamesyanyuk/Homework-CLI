@@ -12,7 +12,7 @@ config.GOOGLE_AUTH = {
     scope: ['https://www.googleapis.com/auth/calendar']
 };
 
-config.VERSION = '1.0.1';
+config.VERSION = '1.0.3';
 config.CALENDAR = {
     summary: 'Homework-CLI',
     accessRole: 'owner'

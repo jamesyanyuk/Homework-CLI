@@ -27,7 +27,7 @@ program
 
 var homePath = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
 
-var configFile = path.join(__dirname, 'config.json');
+var configFile = path.join(__dirname, '../', 'config.json');
 var tokenFile = path.join(homePath, '.config', config.CLIENT_NAME, 'token.json');
 
 // Config file object
